@@ -2810,7 +2810,7 @@ int main()
 }
 ```
 
-##三维偏序
+## 三维偏序
 ```cpp
 #include<bits/stdc++.h>
 using namespace std;
