@@ -2287,3 +2287,168 @@ int main()
     }
 }
 ```
+
+## 2-SAT
+
+```cpp
+#include <cmath>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <functional>
+#include <iomanip>
+#include <ios>
+#include <iostream>
+#include <ratio>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+using lll = __int128_t;
+using ll = long long;
+
+//#define DEBUG
+#if defined(DEBUG) && !defined(NDEBUG)
+template <typename T> void dbg(T t)
+{
+	cout << t << endl;
+}
+template <typename T, typename... Args> void dbg(T t, Args... args)
+{
+	cout << t << "  ";
+	dbg(args...);
+}
+const ll maxn = 12;
+#else
+#define dbg(...) void()
+const ll maxn = 2000500;
+#endif
+
+const ll mod = 1e9 + 7;
+const long double eps = 1e-8;
+const ll mag = 4256233;
+const ll inf = 1e18;
+const double rdm = 1;
+
+#define double long double
+
+ll m,n;
+
+struct st {
+    ll t;
+    ll w;
+    ll nxt;
+} e[maxn << 2];
+ll hd[maxn];
+ll cnt = 1;
+
+void adde(ll u, ll v, ll w)
+{
+    e[++cnt] = { v,w,hd[u] };
+    hd[u] = cnt;
+}
+
+struct tst{
+    ll nd,dis;
+    friend bool operator<(const tst&a,const tst&b)
+    {
+        return a.dis>b.dis;
+    }
+};
+
+ll dis[maxn];
+bool vis[maxn];
+bool bell()
+{
+    dis[0]=0;
+    bool f;
+    for (ll i=0;i<=n;i++)
+    {
+        f=0;
+        for (ll u=0;u<=n;u++)
+        {
+            if (dis[u]==inf)
+            {
+                continue;
+            }
+            for (ll i=hd[u];i!=0;i=e[i].nxt)
+            {
+                ll v=e[i].t;
+                ll w=e[i].w;
+                if (dis[v]>dis[u]+w)
+                {
+                    dis[v]=dis[u]+w;
+                    f=1;
+                }
+            }
+        }
+        if (!f)
+        {
+            break;
+        }
+    }
+    return f;
+}
+
+void solv()
+{
+    cin>>n>>m;
+    for (ll i=0;i<m;i++)
+    {
+        ll a,b,y;
+        cin>>a>>b>>y;
+        adde(b,a,y);
+    }
+    for (ll i=1;i<=m;i++)
+    {
+        dis[i]=inf;
+        adde(0,i,0);
+    }
+
+    bool bell_f=bell();
+    if (bell_f) {
+        cout << "NO" << endl;
+        return ;
+    }
+
+    ll smlst=1e10;
+    for (ll i=1;i<=n;i++)
+    {
+        smlst=min(smlst,dis[i]);
+        if (dis[i]>1e11)
+        {
+            cout<<"NO"<<endl;
+            return;
+        }
+    }
+    if (smlst<=0) {
+        smlst = -smlst + 1;
+    }
+
+    for (ll i=1;i<=n;i++)
+    {
+        cout<<dis[i]+smlst<<' ';
+    }
+    cout<<endl;
+
+    return;
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+    cout.setf(ios::fixed);
+    ll t = 1;
+    // cin >> t;
+    while (t--) {
+        solv();
+    }
+    return 0;
+}
+```
