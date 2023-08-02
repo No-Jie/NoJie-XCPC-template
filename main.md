@@ -2151,3 +2151,139 @@ int main()
     return 0;
 }
 ```
+
+## 高斯消元
+
+```cpp
+#include <algorithm>
+#include <cstdio>
+#include <iostream>
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
+#include <functional>
+#include <cmath>
+
+using namespace std;
+
+using ll = long long;
+using ull = unsigned long long;
+
+#define _DEBUG
+
+#if defined(DEBUG)
+void DBG_p()
+{
+}
+template <typename T, typename... Args> void DBG_p(T head, Args... args)
+{
+    cout << " " << head;
+    DBG_p(args...);
+}
+template <typename... Args> void DBG(Args... args)
+{
+    cout << "Line:" << __LINE__;
+    DBG_p(args...);
+    cout << endl;
+}
+#else
+#define DBG(f, ...) void()
+#endif
+
+double matrix[105][105];
+ll n;
+
+const double e=1e-10;
+
+bool has_multiple_solution()
+{
+    for (ll i=1;i<=n;i++)
+    {
+        bool bs=true;
+        for (ll j=1;j<=n;j++)
+        {
+            if (i==j)
+            {
+                continue;
+            }
+            double divi=double(matrix[i][1])/double(matrix[j][1]);
+            for (ll k=2;k<=n+1;k++)
+            {
+                double diff=double(matrix[i][k])/double(matrix[j][k])-divi;
+                diff=diff>0?diff:-diff;
+                if (diff>e)
+                {
+                    bs=false;
+                    break;
+                }
+            }
+            if (bs)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int solv()
+{
+    // cin>>n>>m;
+    scanf("%lld", &n);
+
+    for(ll i=1;i<=n;i++)
+    {
+        for (ll j=1;j<=n+1;j++)
+        {
+            scanf("%lf",&matrix[i][j]);
+        }
+    }
+
+    if (has_multiple_solution())
+    {
+        printf("No Solution\n");
+        return 0;
+    }
+
+    for (ll i=1;i<=n;i++)
+    {
+        for (ll j=1;j<=n;j++)
+        {
+            if (i==j)
+            {
+                double divi=matrix[i][i];
+                for (ll k=i;k<=n+1;k++)
+                {
+                    matrix[j][k]/=divi;
+                }
+            }
+            else
+            {
+                double mult=matrix[j][i]/matrix[i][i];
+                for (ll k=i;k<=n+1;k++)
+                {
+                    matrix[j][k]-=mult*matrix[i][k];
+                }
+            }
+        }
+    }
+
+    for (ll i=1;i<=n;i++)
+    {
+        printf("%.2lf\n",matrix[i][n+1]);
+    }
+    
+    return 0;
+}
+
+int main()
+{
+    int t=1;
+    // cin >> t;
+    while (t--)
+    {
+        solv();
+    }
+}
+```
