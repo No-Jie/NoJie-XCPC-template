@@ -2643,3 +2643,169 @@ int main()
 	return 0;
 }
 ```
+
+## 可持久化线段树
+
+```cpp
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <queue>
+#include <set>
+#include <utility>
+#include <vector>
+
+using namespace std;
+
+// using ll = long long;
+using ll = int;
+using ull = unsigned long long;
+
+#define _DEBUG
+
+#if defined(DEBUG)
+void DBG_p()
+{
+}
+template <typename T, typename... Args> void DBG_p(T head, Args... args)
+{
+	cout << " " << head;
+	DBG_p(args...);
+}
+template <typename... Args> void DBG(Args... args)
+{
+	cout << "Line:" << __LINE__;
+	DBG_p(args...);
+	cout << endl;
+}
+#else
+#define DBG(f, ...) void()
+#define endl '\n'
+#endif
+
+const ll N = 1000500;
+
+ll n, m;
+ll s[N];
+
+struct node {
+	ll l, r;
+	ll val;
+	ll lb, rb;
+
+	node() = default;
+	node(const node &rhs) = default;
+} nodes[N * 20 * 4];
+// WTF????
+
+ll cnt = 0;
+
+ll root[N];
+
+// void copy_node(ll t, const ll f)
+// {
+// 	nodes[t].l = nodes[f].l;
+// 	nodes[t].r = nodes[f].r;
+// 	nodes[t].lb = nodes[f].lb;
+// 	nodes[t].rb = nodes[f].rb;
+// 	nodes[t].val = nodes[f].val;
+// }
+
+ll update(ll u, ll pos, ll v)
+{
+	if (nodes[u].lb == nodes[u].rb && nodes[u].lb == pos) {
+		ll new_node = ++cnt;
+		nodes[new_node] = nodes[u];
+		nodes[new_node].val = v;
+		return new_node;
+	}
+	if (nodes[u].lb == nodes[u].rb) {
+		return u;
+	}
+	ll new_node = ++cnt;
+	nodes[new_node] = nodes[u];
+	ll mid = (nodes[new_node].lb + nodes[new_node].rb) / 2;
+
+	if (pos <= mid) {
+		nodes[new_node].l = update(nodes[new_node].l, pos, v);
+	} else {
+		nodes[new_node].r = update(nodes[new_node].r, pos, v);
+	}
+
+	return new_node;
+}
+
+ll query(ll u, ll pos)
+{
+	if (nodes[u].lb == nodes[u].rb && nodes[u].lb == pos) {
+		return nodes[u].val;
+	}
+	if (nodes[u].lb == nodes[u].rb) {
+		return 0;
+	}
+
+	ll mid = (nodes[u].lb + nodes[u].rb) / 2;
+	if (pos <= mid) {
+		return query(nodes[u].l, pos);
+	} else {
+		return query(nodes[u].r, pos);
+	}
+}
+
+void build(ll u, ll l, ll r)
+{
+	if (l == r) {
+		nodes[u].val = s[l];
+		nodes[u].lb = nodes[u].rb = l;
+		return;
+	}
+
+	nodes[u].lb = l;
+	nodes[u].rb = r;
+	nodes[u].l = ++cnt;
+	nodes[u].r = ++cnt;
+	;
+	ll mid = (l + r) / 2;
+	build(nodes[u].l, l, mid);
+	build(nodes[u].r, mid + 1, r);
+	// push_up(u);
+}
+
+int main()
+{
+	cin.tie(0);
+	cout.tie(0);
+	ios::sync_with_stdio(false);
+
+	cin >> n >> m;
+	// scanf("%lld%lld", &n, &m);
+
+	for (ll i = 1; i <= n; i++) {
+		cin >> s[i];
+		// scanf("%lld", &h[i]);
+	}
+	root[0] = ++cnt;
+	build(root[0], 1, n);
+
+	for (ll i = 1; i <= m; i++) {
+		ll v, op;
+		cin >> v >> op;
+		if (op == 1) {
+			ll loc, val;
+			cin >> loc >> val;
+			root[i] = update(root[v], loc, val);
+		} else {
+			ll loc;
+			cin >> loc;
+			cout << query(root[v], loc) << endl;
+			root[i] = root[v];
+		}
+	}
+
+	cout.flush();
+	return 0;
+}
+```
