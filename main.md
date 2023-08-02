@@ -1866,3 +1866,288 @@ int main(){
     for(int i=0;i<=m;i++)printf("%d ",(int)(a[i].real()/n+0.5));
 }
 ```
+
+## 可持久化权值线段树
+
+```cpp
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <queue>
+#include <set>
+#include <utility>
+#include <vector>
+
+using namespace std;
+
+// using ll = long long;
+using ll = int;
+using ull = unsigned long long;
+
+#define DEBUG
+
+#if defined(DEBUG)
+void DBG_p()
+{
+}
+template <typename T, typename... Args> void DBG_p(T head, Args... args)
+{
+	cout << " " << head;
+	DBG_p(args...);
+}
+template <typename... Args> void DBG(Args... args)
+{
+	cout << "Line:" << __LINE__;
+	DBG_p(args...);
+	cout << endl;
+}
+#else
+#define DBG(f, ...) void()
+#define endl '\n'
+#endif
+
+const ll N = 1000500;
+
+ll n, m;
+ll s[N];
+
+struct node {
+	ll l, r;
+	ll val;
+	ll lb, rb;
+
+} nodes[N * 20 * 4];
+// WTF????
+
+ll cnt = 0;
+
+ll root[N];
+
+ll update(ll u, ll pos)
+{
+	ll new_node = ++cnt;
+	nodes[new_node] = nodes[u];
+	nodes[new_node].val++;
+	if (nodes[new_node].lb == nodes[new_node].rb) {
+		return new_node;
+	}
+
+	ll mid = (nodes[new_node].lb + nodes[new_node].rb) / 2;
+
+	if (pos <= mid) {
+		nodes[new_node].l = update(nodes[new_node].l, pos);
+	} else {
+		nodes[new_node].r = update(nodes[new_node].r, pos);
+	}
+
+	return new_node;
+}
+
+ll query(ll ru, ll lu, ll k)
+{
+	if (nodes[ru].lb == nodes[ru].rb) {
+		return nodes[ru].lb;
+	}
+
+	ll tx = nodes[nodes[ru].l].val - nodes[nodes[lu].l].val;
+	if (tx >= k) {
+		return query(nodes[ru].l, nodes[lu].l, k);
+	} else {
+		return query(nodes[ru].r, nodes[lu].r, k - tx);
+	}
+}
+
+void build(ll u, ll l, ll r)
+{
+	nodes[u].lb = l;
+	nodes[u].rb = r;
+	if (l == r) {
+		nodes[u].val = 0;
+		return;
+	}
+	nodes[u].l = ++cnt;
+	nodes[u].r = ++cnt;
+	ll mid = (l + r) / 2;
+	build(nodes[u].l, l, mid);
+	build(nodes[u].r, mid + 1, r);
+	// push_up(u);
+}
+
+ll distb[N];
+map<ll, ll> mp, rmp;
+ll mcnt = 0;
+
+int main()
+{
+	cin.tie(0);
+	cout.tie(0);
+	ios::sync_with_stdio(false);
+
+	cin >> n >> m;
+	// scanf("%lld%lld", &n, &m);
+
+	for (ll i = 1; i <= n; i++) {
+		cin >> s[i];
+		distb[i] = s[i];
+		// scanf("%lld", &h[i]);
+	}
+	sort(distb + 1, distb + n + 1);
+	auto tp = unique(distb + 1, distb + n + 1) - distb - 1;
+
+	for (auto i = 1; i <= tp; i++) {
+		mp[distb[i]] = ++mcnt;
+		rmp[mcnt] = distb[i];
+	}
+
+	root[0] = ++cnt;
+	build(root[0], 1, mcnt);
+
+	for (ll i = 1; i <= n; i++) {
+		auto mn = mp[s[i]];
+		root[i] = update(root[i - 1], mn);
+	}
+	for (ll i = 1; i <= m; i++) {
+		ll l, r, k;
+		cin >> l >> r >> k;
+		ll res = query(root[r], root[l - 1], k);
+		cout << rmp[res] << endl;
+	}
+	cout.flush();
+	return 0;
+}
+```
+
+## 字符串哈希
+
+```cpp
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <map>
+#include <queue>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
+using namespace std;
+
+using ll = long long;
+using ull = unsigned long long;
+
+#define DEBUG
+
+#if defined(DEBUG)
+void DBG_p()
+{
+}
+template <typename T, typename... Args> void DBG_p(T head, Args... args)
+{
+    cout << " " << head;
+    DBG_p(args...);
+}
+template <typename... Args> void DBG(Args... args)
+{
+    cout << "Line:" << __LINE__;
+    DBG_p(args...);
+    cout << endl;
+}
+#else
+#define DBG(f, ...) void()
+#define endl '\n'
+#endif
+
+const ll mod=19260817;
+const ll p1=131;
+const ll p2=1331;
+
+struct st{
+    string s;
+    ll nxt;
+}ss[10050];
+ll cnt;
+
+ll mhash(string s)
+{
+    ll res=0;
+    ll len=s.length();
+
+    for (ll i=len-1;i>=0;i--)
+    {
+        res=(res*p1+s[i])%mod;
+    }
+
+    return res;
+}
+
+ll ht[mod+1];
+
+void add(string s)
+{
+    ll hs=mhash(s);
+
+    ss[++cnt].s=s;
+    ss[cnt].nxt=ht[hs];
+    ht[hs]=cnt;
+}
+
+bool find(string s)
+{
+    ll hs=mhash(s);
+
+    for (ll i=ht[hs];i!=0;i=ss[i].nxt)
+    {
+        if (ss[i].s==s)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void solv()
+{
+    ll n;
+    cin>>n;
+
+    ll res=0;
+
+    for (ll i=0;i<n;i++)
+    {
+        string s;
+        cin>>s;
+        if (!find(s))
+        {
+            add(s);
+            res++;
+        }
+        
+    }
+    cout<<res<<endl;
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+    ios::sync_with_stdio(false);
+
+    int t = 1;
+
+    // cin >> t;
+    while (t--)
+    {
+        solv();
+    }
+
+    cout.flush();
+    return 0;
+}
+```
