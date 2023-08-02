@@ -147,22 +147,22 @@ priority_queue<Point, vector<Point>, greater<Point> > a; //小顶堆
 
 RMQ：区间最大/最小值
 
-ST表可解决RMQ，区间gcd等问题，$O(nlogn)$预处理，$O(1)$询问
+ST表可解决RMQ，区间gcd等问题， $ O(nlogn) $ 预处理， $ O(1) $ 询问
 
-令$ f(i,j) $表示区间$ [i,i+2^j-1]$ 的最大值。显然$ f(i,0)=a_i$。
+令 $  f(i,j)  $ 表示区间 $  [i,i+2^j-1] $  的最大值。显然 $  f(i,0)=a_i $ 。
 
-状态转移方程：$f(i,j)=\max(f(i,j-1),f(i+2^{j-1},j-1))$。
+状态转移方程： $ f(i,j)=\max(f(i,j-1),f(i+2^{j-1},j-1)) $ 。
 
-对于每个询问$ [l,r]$，我们把它分成两部分：$f[l,s]$ 与 $f[r-2^s+1,s]$，其中 $s=\left\lfloor\log_2(r-l+1)\right\rfloor$。两部分的结果的最大值就是回答。
+对于每个询问 $  [l,r] $ ，我们把它分成两部分： $ f[l,s] $  与  $ f[r-2^s+1,s] $ ，其中  $ s=\left\lfloor\log_2(r-l+1)\right\rfloor $ 。两部分的结果的最大值就是回答。
 
 log 函数预处理：
 
-$$
+ $  $ 
 \left\{\begin{aligned}
 Logn[1] &=0, \\
 Logn\left[i\right] &=Logn[\frac{i}{2}] + 1.
 \end{aligned}\right.
-$$
+ $  $ 
 
 ### 并查集
 
@@ -526,7 +526,7 @@ void MergeSort(int l, int r) {
 
 倍增法
 
-首先选定某点为树根，dfs求每个点的深度depth，点$x$的第$2^i$级祖先$f[x,i]$，点x到第$2^i$级祖先的距离。之后lca函数求x到y的距离，
+首先选定某点为树根，dfs求每个点的深度depth，点 $ x $ 的第 $ 2^i $ 级祖先 $ f[x,i] $ ，点x到第 $ 2^i $ 级祖先的距离。之后lca函数求x到y的距离，
 
 ```c++
 #include<bits/stdc++.h>
@@ -937,7 +937,7 @@ signed main() {
 
 ### 二分图最大匹配
 
-从前一个和谐的班级，有 $n_l$ 个是男生，有$n_r$ 个是女生。编号分别为$1, \dots, n_l$ 和$1, \dots, n_r$。有若干个这样的条件：第$v$ 个男生和第$u$ 个女生愿意结为配偶。请问这个班级里最多产生多少对配偶？
+从前一个和谐的班级，有  $ n_l $  个是男生，有 $ n_r $  个是女生。编号分别为 $ 1, \dots, n_l $  和 $ 1, \dots, n_r $ 。有若干个这样的条件：第 $ v $  个男生和第 $ u $  个女生愿意结为配偶。请问这个班级里最多产生多少对配偶？
 
 ```c++
 #include<bits/stdc++.h>
@@ -984,7 +984,7 @@ signed main() {
 
 ### 树的直径
 
-两次dfs：首先从任意节点 $y$ 开始进行第一次 DFS，到达距离其最远的节点，记为 $z$，然后再从 $z$ 开始做第二次 DFS，到达距离 $z$ 最远的节点，记为 $z'$，则 $\delta(z,z')$ 即为树的直径。
+两次dfs：首先从任意节点  $ y $  开始进行第一次 DFS，到达距离其最远的节点，记为  $ z $ ，然后再从  $ z $  开始做第二次 DFS，到达距离  $ z $  最远的节点，记为  $ z' $ ，则  $ \delta(z,z') $  即为树的直径。
 
 ```c++
 #include<bits/stdc++.h>
@@ -1153,21 +1153,21 @@ void manacher() {
 
 ### 后缀数组
 
-$sa[i]$表示将所有后缀排序后第i小的后缀的编号，也是所说的后缀数组；
+ $ sa[i] $ 表示将所有后缀排序后第i小的后缀的编号，也是所说的后缀数组；
 
-$rk[i]$表示后缀i的排名，是重要的辅助数组；
+ $ rk[i] $ 表示后缀i的排名，是重要的辅助数组；
 
-这两个数组满足性质：$sa[rk[i]]=rk[sa[i]]=i$。
+这两个数组满足性质： $ sa[rk[i]]=rk[sa[i]]=i $ 。
 
-$height[i]$表示第i名的后缀与它前一名的后缀的最长公共前缀,即$height[i]=lcp(sa[i],sa[i-1])$
+ $ height[i] $ 表示第i名的后缀与它前一名的后缀的最长公共前缀,即 $ height[i]=lcp(sa[i],sa[i-1]) $ 
 
-引理：$height[rk[i]] >= height[rk[i - 1]] - 1$
+引理： $ height[rk[i]] >= height[rk[i - 1]] - 1 $ 
 
-LCP（最长公共前缀）： $lcp(i, j)$ 表示后缀 $i$ 和后缀 $j$ 的最长公共前缀（的长度）。
+LCP（最长公共前缀）：  $ lcp(i, j) $  表示后缀  $ i $  和后缀  $ j $  的最长公共前缀（的长度）。
 
-两子串最长公共前缀：$lcp(sa[i], sa[j]) = \min\{height[i + 1..j]\}$ （转换为RMQ区间最小值问题）
+两子串最长公共前缀： $ lcp(sa[i], sa[j]) = \min\{height[i + 1..j]\} $  （转换为RMQ区间最小值问题）
 
-不同子串的数目：$\frac{ n(n + 1) }{2} - \sum\limits_{ i = 2 } ^ nheight[i]$
+不同子串的数目： $ \frac{ n(n + 1) }{2} - \sum\limits_{ i = 2 } ^ nheight[i] $ 
 
 ```c++
 #include<bits/stdc++.h>
@@ -1261,11 +1261,11 @@ int KMP(string s, string t, int pos) {
 
 > 组合数可以通过杨辉三角来递推计算
 
-$\sum_{i=0}^n\binom{n-i}{i}=F_{n+1}\tag{12}$ （其中 F 是斐波那契数列）
+ $ \sum_{i=0}^n\binom{n-i}{i}=F_{n+1}\tag{12} $  （其中 F 是斐波那契数列）
 
 ### 埃式筛
 
-时间复杂度是 $O(n\log\log n)$
+时间复杂度是  $ O(n\log\log n) $ 
 
 ```c++
 int Eratosthenes(int n) {
@@ -1284,7 +1284,7 @@ int Eratosthenes(int n) {
 
 ### 拓展欧几里得
 
-常用于求 $ax+by=\gcd(a,b)$ 的一组可行解。
+常用于求  $ ax+by=\gcd(a,b) $  的一组可行解。
 
 ```c++
 int exgcd(int a, int b, int& x, int& y) {
@@ -1300,7 +1300,7 @@ int exgcd(int a, int b, int& x, int& y) {
 
 ### 欧拉函数
 
-欧拉函数即 $\varphi(n)$，表示的是小于等于 $n$ 和 $n$ 互质的数的个数。
+欧拉函数即  $ \varphi(n) $ ，表示的是小于等于  $ n $  和  $ n $  互质的数的个数。
 
 ```c++
 int euler_phi(int n) {
@@ -1317,7 +1317,7 @@ int euler_phi(int n) {
 
 ### 同余方程
 
-求关于$ x$的同余方程 $ a x \equiv 1 \pmod {b}$ 的最小正整数解。
+求关于 $  x $ 的同余方程  $  a x \equiv 1 \pmod {b} $  的最小正整数解。
 
 ```c++
 signed main() {
