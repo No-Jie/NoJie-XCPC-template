@@ -2452,3 +2452,194 @@ int main()
     return 0;
 }
 ```
+
+## 二维凸包
+
+```cpp
+#include <cmath>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <functional>
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+using ll = long long;
+
+// #define DEBUG
+#ifdef DEBUG
+template <typename T> void dbg(T t)
+{
+	cout << t << endl;
+}
+template <typename T, typename... Args> void dbg(T t, Args... args)
+{
+	cout << t << "  ";
+	dbg(args...);
+}
+const ll maxn = 12;
+#else
+#define dbg(...) void()
+const ll maxn = 100500;
+#endif
+
+const ll mod = 1e9 + 7;
+const long double eps = 1e-8;
+
+const ll mag = 4256233;
+
+const double rdm = 1;
+
+#define double long double
+
+ll n;
+struct poi {
+	double x, y;
+
+	bool operator<(const poi &b) const
+	{
+		if (x == b.x) {
+			return y < b.y;
+		}
+		return x < b.x;
+	}
+	bool operator==(const poi &b) const
+	{
+		return x == b.x && y == b.y;
+	}
+	bool operator>(const poi &b) const
+	{
+		if (x == b.x) {
+			return y > b.y;
+		}
+		return x > b.x;
+	}
+	poi operator+(const poi &b) const
+	{
+		return { x + b.x, y + b.y };
+	}
+	poi &operator+=(const poi &b)
+	{
+		x += b.x;
+		y += b.y;
+		return *this;
+	}
+	poi operator-(int) const
+	{
+		return { -x, -y };
+	}
+	poi operator-(const poi &b) const
+	{
+		return { x - b.x, y - b.y };
+	}
+	double operator*(const poi &b) const
+	{
+		return x * b.x + y * b.y;
+	}
+	poi operator*(const double &b) const
+	{
+		return { x * b, y * b };
+	}
+	poi operator/(const double &b) const
+	{
+		return { x / b, y / b };
+	}
+	double operator^(const poi &b) const
+	{
+		return x * b.y - y * b.x;
+	}
+	double norm() const
+	{
+		return sqrt(x * x + y * y);
+	}
+	poi unit() const
+	{
+		if (abs(norm()) < eps) {
+			return { 0, 0 };
+		}
+		return *this / norm();
+	}
+	double theta() const
+	{
+		return (x == 0 && y == 0) ? -1 / 0. : atan2(y, x);
+	}
+
+} a[maxn];
+double dis(poi _a, poi _b)
+{
+	return sqrt((_a.x - _b.x) * (_a.x - _b.x) +
+		    (_a.y - _b.y) * (_a.y - _b.y));
+}
+
+poi center;
+bool cmp_theta(const poi &__a, const poi &__b)
+{
+	double a_ang = (__a - center).theta();
+	double b_ang = (__b - center).theta();
+	if (a_ang != b_ang) {
+		return a_ang > b_ang;
+	}
+	return __a < __b;
+}
+bool check(const poi &p, const poi &q, const poi &r)
+{
+	double res = ((q - p) ^ (r - q));
+	if (abs(res) < eps) {
+		return dis(p, r) > dis(p, q);
+	}
+	return res < 0;
+}
+
+void solv()
+{
+	cin >> n;
+	for (ll i = 1; i <= n; i++) {
+		cin >> a[i].x >> a[i].y;
+	}
+	sort(a + 1, a + n + 1);
+	center = a[1];
+	sort(a + 2, a + n + 1, cmp_theta);
+	for (ll i = 1; i <= n; i++) {
+		dbg("SRT:", a[i].x, a[i].y);
+	}
+	vector<poi> ret;
+	ret.push_back(a[1]);
+	for (ll i = 2; i <= n; i++) {
+		while (ret.size() > 1 &&
+		       !check(ret[ret.size() - 2], ret[ret.size() - 1], a[i])) {
+			dbg("REM:", ret.back().x, ret.back().y);
+			ret.pop_back();
+		}
+		ret.push_back(a[i]);
+	}
+
+	for (auto i : ret) {
+		dbg("RES:", i.x, i.y);
+	}
+
+	double res = dis(ret.front(), ret.back());
+	for (size_t i = 1; i < ret.size(); i++) {
+		res += dis(ret[i - 1], ret[i]);
+	}
+
+	printf("%.2Lf\n", res);
+
+	return;
+}
+
+int main()
+{
+	ll t = 1;
+	// cin >> t;
+	while (t--) {
+		solv();
+	}
+	return 0;
+}
+```
