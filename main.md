@@ -632,6 +632,76 @@ tarjan算法
 树链剖分
 
 ```c++
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn=500015;
+struct edge{
+	int v,fail;
+}e[maxn*2];
+int p[maxn],eid;
+void init(){
+	memset(p,-1,sizeof p);
+	eid=0;
+}
+void insert(int u,int v){
+	e[eid].v=v;
+	e[eid].fail=p[u];
+	p[u]=eid++;
+}
+int sz[maxn],dep[maxn],top[maxn],hson[maxn],fa[maxn];
+void dfs1(int u){
+	sz[u]=1;
+	dep[u]=dep[fa[u]]+1;
+	for(int i=p[u];~i;i=e[i].fail){
+		int v=e[i].v;
+		if(v!=fa[u]){
+			fa[v]=u;
+			dfs1(v);
+			sz[u]+=sz[v];
+			if(sz[v]>sz[hson[u]]){
+				hson[u]=v;
+			} 
+		}
+	} 
+}
+void dfs2(int u,int tp){
+	top[u]=tp;
+	if(hson[u]){
+		dfs2(hson[u],tp);
+	}
+	for(int i=p[u];~i;i=e[i].fail){
+		int v=e[i].v;
+		if(v!=fa[u] && v!=hson[u]){
+			dfs2(v,v);
+		}
+	}
+}
+int lca(int a,int b){
+	while(top[a]!=top[b]){
+		if(dep[top[a]]>dep[top[b]])swap(a,b);
+		b=fa[top[b]];
+	}
+	return dep[a]>dep[b]?b:a;
+}
+int main(){
+	init();
+	int n,m,s;
+	scanf("%d%d%d",&n,&m,&s); 
+	for(int i=1;i<n;i++){
+		int a,b;
+		scanf("%d%d",&a,&b);
+		insert(a,b);
+		insert(b,a);
+	} 
+	dfs1(s);
+	dfs2(s,s);
+	for(int i=1;i<=m;i++){
+		int a,b;
+		scanf("%d%d",&a,&b);
+		printf("%d\n",lca(a,b));
+	}
+	return 0;
+}
 
 ```
 
