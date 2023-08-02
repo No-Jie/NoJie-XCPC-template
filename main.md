@@ -2809,3 +2809,79 @@ int main()
 	return 0;
 }
 ```
+
+##三维偏序
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+struct element{
+	int a,b,c,cnt,ans;
+}ele1[100005],ele2[100005];
+int m=0,cnt=0,t[200005],res[200005],n,k;
+bool cmp1(element x,element y){
+	if (x.a!=y.a){
+		return x.a<y.a;
+	}else{
+		if (x.b!=y.b){
+			return x.b<y.b;
+		}else return x.c<y.c;
+	}
+}
+bool cmp2(element x,element y){
+	if (x.b!=y.b){
+		return x.b<y.b;
+	}else return x.c<y.c;
+}
+int lowbit(int x){return x&(-x);}
+int find(int x){
+	int sum=0;
+	for(;x;x-=lowbit(x))sum+=t[x];
+	return sum;
+}
+void add(int x,int kk){
+	for (;x<=k;x+=lowbit(x))t[x]+=kk;
+}
+void cdq(int l,int r){
+	if (l>=r)return;
+	int mid=(l+r)>>1;
+	cdq(l,mid);
+	cdq(mid+1,r);
+	sort(ele2+l,ele2+mid+1,cmp2);
+	sort(ele2+mid+1,ele2+r+1,cmp2);
+	int i=l;
+	for (int j=mid+1;j<=r;j++){
+		while (i<=mid&&ele2[i].b<=ele2[j].b){
+			add(ele2[i].c,ele2[i].cnt);
+			i++;
+		}
+		ele2[j].ans+=find(ele2[j].c);
+	}
+	for (int j=l;j<i;j++)add(ele2[j].c,-ele2[j].cnt);
+//	memset(t,0,sizeof(t));
+} 
+signed main(){
+	ios::sync_with_stdio(false),cin.tie(0);
+	cin>>n>>k;
+	for (int i=1;i<=n;i++){
+		cin>>ele1[i].a;
+		cin>>ele1[i].b;
+		cin>>ele1[i].c;
+	}
+	sort(ele1+1,ele1+n+1,cmp1);
+	//去重 
+	cnt=1;
+	for (int i=1;i<=n;i++){
+		if (i==n||ele1[i].a!=ele1[i+1].a||ele1[i].b!=ele1[i+1].b||ele1[i].c!=ele1[i+1].c){
+			ele2[++m]=ele1[i];
+			ele2[m].cnt=cnt;
+			cnt=1;
+		}else cnt++;
+	}
+	cdq(1,m);
+	for (int i=1;i<=n;i++){
+		res[ele2[i].ans+ele2[i].cnt-1]+=ele2[i].cnt;
+	}
+	for (int i=0;i<n;i++)cout<<res[i]<<"\n";
+}
+```
