@@ -729,34 +729,21 @@ void tarjan(int x){
 ### 链式前向星
 
 ```c++
-#include<bits/stdc++.h>
-using namespace std;
-#define int long long 
-#define N 200005
-#define M 200005
-int head[N],nxt[M],to[M],val[M],tot;
-void add(int u,int v,int w){
-	nxt[++tot]=head[u];	// 当前边的后继
-	head[u]=tot;		// 起点 u 的第一条边
-	to[tot]=v;			// 当前边的终点
-	val[tot]=w;
+int eid,p[2*N];
+struct edge{
+	int v,fail;
+}e[2*N];
+void init(){
+	memset(p,-1,sizeof(p));
+	eid=0;
 }
-signed main(){
-	ios::sync_with_stdio(false),cin.tie(0);
-	int n,m,u,v,w;
-	cin>>n>>m;
-	// head[u] 和 cnt 的初始值都为 0
-	tot=0;
-	memset(head,0,sizeof(int)*(n+1));
-	// 建图
-	for (int i=1;i<=m;i++){
-		cin>>u>>v>>w;
-		add(u,v,w);
-	}
-	// 遍历u的出边
-	for (int i=head[u];i;i=nxt[i]){
-		int v=to[i];
-	}
+void add(int u,int v){
+	e[eid].v=v;
+	e[eid].nxt=p[u];
+	p[u]=eid++;
+}
+for (int i=p[u];~i;i=e[i].fail){
+	int v=e[i].v;
 }
 ```
 
@@ -1269,6 +1256,71 @@ void manacher() {
             mid = i;
         }
     }
+```
+
+### 后缀自动机
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+const int N=1000006;
+int cnt[2*N],ans=0;
+int tot=1,np=1;
+int fa[2*N],ch[2*N][26],len[2*N];
+int eid,p[2*N];
+struct edge{
+	int v,fail;
+}e[2*N];
+void init(){
+	memset(p,-1,sizeof(p));
+	eid=0;
+}
+void add(int u,int v){
+	e[eid].v=v;
+	e[eid].nxt=p[u];
+	p[u]=eid++;
+}
+//fa存链接边终点
+//ch存转移边终点
+//len存最长串长度 
+void insert(int c){
+	int p=np;
+	np=++tot;
+	len[np]=len[p]+1;cnt[np]=1;
+	for(;p&&!ch[p][c];p=fa[p])ch[p][c]=np;
+	if (p==0)fa[np]=1;//1.如果c是新字符 
+	else{
+		int q=ch[p][c];
+		if (len[q]==len[p]+1)fa[np]=q;//2.如果链接点合法 
+		else{//2.如果链接点不合法 
+			int nq=++tot;
+			len[nq]=len[p]+1;
+			fa[nq]=fa[q];fa[q]=nq;fa[np]=nq;
+			for(;p&&ch[p][c]==q;p=fa[p])ch[p][c]=nq;
+			memcpy(ch[nq],ch[q],sizeof(ch[q]));
+		}
+	} 
+}
+void dfs(int u){
+	for (int i=p[u];~i;i=e[i].fail){
+		int v=e[i].v;
+		dfs(v);
+		cnt[u]+=cnt[v];
+	}
+	if (cnt[u]>1)ans=max(ans,cnt[u]*len[u]);
+}
+signed main(){
+	//求出S的所有出现次数不为1的子串的出现次数乘上该子串长度的最大值
+	ios::sync_with_stdio(false),cin.tie(0);
+	string s;
+	cin>>s;
+	int len=s.length();
+	for (int i=0;i<len;i++)insert(s[i]-'a');
+	init();
+	for (int i=2;i<=tot;i++)add(fa[i],i);
+	dfs(1);
+	cout<<ans<<'\n';
+} 
 ```
 
 ### 后缀数组
