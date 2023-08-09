@@ -8,18 +8,6 @@ gcd(x,y,z)=gcd(x,y-x,z-y)
 
 素数：1e9+7，998244353，99991
 
-
-
-[洛谷 P4779](https://vjudge.net/problem/洛谷-P4779/origin)[单源最短路径（标准版）](https://vjudge.net/contest/507187#problem/C)
-
-[洛谷 P1339](https://vjudge.net/problem/洛谷-P1339/origin)[Heat Wave G](https://vjudge.net/contest/507187#problem/E)
-
-[洛谷 P1346](https://vjudge.net/problem/洛谷-P1346/origin)[电车](https://vjudge.net/contest/507187#problem/F)边权为0或1，求单源最短路
-
-[HDU 1285](https://vjudge.net/problem/HDU-1285/origin)[确定比赛名次](https://vjudge.net/contest/507187#problem/H)拓扑排序
-
-
-
 ### 关闭流同步
 
 ```c++
@@ -42,13 +30,6 @@ int read() {
 	}
 	return sum*p;
 }
-```
-
-### 文件读写
-
-```c++
-freopen("a.in","r",stdin);
-freopen("a.out","w",stdout);
 ```
 
 # 二分
@@ -1194,6 +1175,74 @@ int search(string str) {
 ```
 
 # 字符串
+
+### 最小表示法
+```c++
+int n, i = 0, j = 1, k = 0, ans;
+cin >> n;
+for (int i = 0; i < n; i++)
+cin >> a[i];
+for (int i = n; i < 2 * n; i++)
+a[i] = a[i - n];
+while (i < n && j < n && k < n)
+{
+if (a[i + k] == a[j + k])
+    k++;
+else
+{
+    if (a[i + k] > a[j + k])
+	i += k + 1;
+    else
+	j += k + 1;
+    if (i == j)
+	i++;
+    k = 0;
+}
+}
+ans = min(i, j);
+for (i = 0; i < n; i++)
+{
+cout << a[ans + i] << " ";
+}
+```
+
+### 字符串哈希
+const int base=13331,mod=1e9+7;
+int h[1000006],p[1000006];
+int get(int l,int r){
+    return ((h[r]-h[l-1]*p[r-l+1]%mod)%mod+mod)%mod;
+}
+void InitHash(string s){
+    int n=s.length()-1;
+    p[0]=1;
+    for(int i=1;i<=n;i++){
+        h[i]=(h[i-1]*base%mod+s[i]-'A'+13)%mod;
+        p[i]=p[i-1]*base%mod;
+    }
+}
+signed main(){
+	ios::sync_with_stdio(false),cin.tie(0);
+	string s1,s2;
+	int t,ans;
+	cin>>t;
+	while (t--){
+		ans=0;
+		cin>>s1>>s2;
+		s1=" "+s1;
+		s2=" "+s2;
+		InitHash(s1);
+		int len1=s1.length()-1,len2=s2.length()-1;
+		int hs1=get(1,len1);
+		InitHash(s2);
+		for (int i=1;i<=len2;i++){
+			if (i+len1-1>len2)break;
+			int temp=get(i,i+len1-1);
+			if (temp==hs1)ans++;
+		}
+		cout<<ans<<'\n';
+	}
+}
+
 
 ### 最长回文字串manacher
 
