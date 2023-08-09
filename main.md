@@ -1207,6 +1207,7 @@ cout << a[ans + i] << " ";
 ```
 
 ### 字符串哈希
+```c++
 const int base=13331,mod=1e9+7;
 int h[1000006],p[1000006];
 int get(int l,int r){
@@ -1242,7 +1243,7 @@ signed main(){
 		cout<<ans<<'\n';
 	}
 }
-
+```
 
 ### 最长回文字串manacher
 
