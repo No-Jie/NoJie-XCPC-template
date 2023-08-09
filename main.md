@@ -3104,3 +3104,195 @@ int main()
     return 0;
 }
 ```
+
+
+## 点分治
+```cpp
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdio>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <queue>
+#include <set>
+#include <utility>
+#include <vector>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+
+using namespace std;
+
+using ll = long long;
+using ull = unsigned long long;
+
+#define DEBUG
+
+#if defined(DEBUG)
+void DBG_p()
+{
+}
+template <typename T, typename... Args> void DBG_p(T head, Args... args)
+{
+	cout << " " << head;
+	DBG_p(args...);
+}
+template <typename... Args> void DBG(Args... args)
+{
+	cout << "Line:" << __LINE__;
+	DBG_p(args...);
+	cout << endl;
+}
+#else
+#define DBG(f, ...) void()
+#define endl '\n'
+#endif
+
+const ll maxn = 205000;
+const ll maxm = 1e7 + 500;
+const ll mod = 998244353;
+
+ll n, m;
+
+struct st {
+	ll t, w, nxt;
+} e[maxn << 4];
+ll hd[maxn];
+ll cnt = 0;
+
+void adde(ll u, ll v, ll w)
+{
+	e[++cnt] = { v, w, hd[u] };
+	hd[u] = cnt;
+}
+
+ll sz[maxn], mx[maxn], vis[maxn], ncnt, rt;
+void fd(ll u, ll f)
+{
+	sz[u] = 1;
+	mx[u] = 0;
+	for (ll i = hd[u]; i != 0; i = e[i].nxt) {
+		ll v = e[i].t;
+		if (v == f || vis[v]) {
+			continue;
+		}
+		fd(v, u);
+		sz[u] += sz[v];
+		mx[u] = max(mx[u], sz[v]);
+	}
+	mx[u] = max(mx[u], ncnt - sz[u]);
+	if (mx[u] < mx[rt]) {
+		rt = u;
+	}
+}
+
+ll dis[maxm], tot[maxm];
+ll tcnt = 0;
+
+void cal_dis(ll u, ll f)
+{
+	tot[++tcnt] = dis[u];
+	for (ll i = hd[u]; i != 0; i = e[i].nxt) {
+		ll v = e[i].t;
+		if (v == f || vis[v]) {
+			continue;
+		}
+		dis[v] = dis[u] + e[i].w;
+		cal_dis(v, u);
+	}
+}
+ll res[maxm], buck[maxm];
+ll has[maxm];
+ll que[maxm], num;
+void calc(ll u)
+{
+	num = 0;
+	for (ll i = hd[u]; i != 0; i = e[i].nxt) {
+		ll v = e[i].t;
+		if (vis[v]) {
+			continue;
+		}
+		tcnt = 0;
+		dis[v] = e[i].w;
+		cal_dis(v, u);
+		for (ll j = 1; j <= tcnt; j++) {
+			for (ll k = 1; k <= m; k++) {
+				if (que[k] - tot[j] >= 0 &&
+				    que[k] - tot[j] <= 1e7 &&
+				    has[que[k] - tot[j]]) {
+					res[k] = 1;
+				}
+			}
+		}
+		for (ll j = 1; j <= tcnt; j++) {
+			if (tot[j] <= 1e7) {
+				buck[++num] = tot[j];
+				has[tot[j]] = 1;
+			}
+		}
+	}
+	for (ll i = 1; i <= num; i++) {
+		has[buck[i]] = 0;
+	}
+}
+
+void divide(ll u)
+{
+	vis[u] = 1;
+	has[0] = 1;
+	calc(u);
+	for (ll i = hd[u]; i != 0; i = e[i].nxt) {
+		ll v = e[i].t;
+		if (vis[v]) {
+			continue;
+		}
+		ncnt = sz[v];
+		rt = 0;
+		mx[0] = ncnt;
+		fd(v, 0);
+		divide(rt);
+	}
+}
+
+void solv()
+{
+	cin >> n >> m;
+	cnt = 0;
+	ncnt = n;
+	for (ll i = 0; i <= n; i++) {
+		hd[i] = 0;
+	}
+	mx[0] = n;
+	rt = 0;
+	for (ll i = 1; i < n; i++) {
+		ll u, v, w;
+		cin >> u >> v >> w;
+		adde(u, v, w);
+		adde(v, u, w);
+	}
+	for (ll i = 1; i <= m; i++) {
+		cin >> que[i];
+	}
+	fd(1, 0);
+	divide(rt);
+	for (ll i = 1; i <= m; i++) {
+		cout << (res[i] ? "AYE" : "NAY") << endl;
+	}
+}
+
+int main()
+{
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+	ll __t = 1;
+	// cin >> __t;
+	while (__t--) {
+		solv();
+	}
+	cout.flush();
+	return 0;
+}
+```
