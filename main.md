@@ -3348,3 +3348,185 @@ int main()
 	return 0;
 }
 ```
+
+## 模拟退火
+```cpp
+#include <cmath>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <functional>
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+using ll = long long;
+
+// #define DEBUG
+#ifdef DEBUG
+template <typename T> void dbg(T t)
+{
+	cout << t << endl;
+}
+template <typename T, typename... Args> void dbg(T t, Args... args)
+{
+	cout << t << "  ";
+	dbg(args...);
+}
+const ll maxn = 12;
+#else
+#define dbg(...) void()
+const ll maxn = 100500;
+#endif
+
+const ll mod = 1e9 + 7;
+const long double eps = 1e-8;
+
+const ll mag = 4256233;
+
+#define double long double
+
+ll n;
+struct poi {
+	double x, y;
+
+	bool operator<(const poi &b)
+	{
+		if (x == b.x) {
+			return y < b.y;
+		}
+		return x < b.x;
+	}
+	bool operator==(const poi &b)
+	{
+		return x == b.x && y == b.y;
+	}
+	poi operator+(const poi &b)
+	{
+		return { x + b.x, y + b.y };
+	}
+	poi &operator+=(const poi &b)
+	{
+		x += b.x;
+		y += b.y;
+		return *this;
+	}
+	poi operator-(int)
+	{
+		return { -x, -y };
+	}
+	double operator*(const poi &b)
+	{
+		return x * b.x + y * b.y;
+	}
+	poi operator*(const double &b)
+	{
+		return { x * b, y * b };
+	}
+	poi operator/(const double &b)
+	{
+		return { x / b, y / b };
+	}
+	double operator^(const poi &b)
+	{
+		return x * b.y - y * b.x;
+	}
+	double norm()
+	{
+		return sqrt(x * x + y * y);
+	}
+	poi unit()
+	{
+		if (abs(norm()) < eps) {
+			return { 0, 0 };
+		}
+		return *this / norm();
+	}
+
+} a[maxn];
+double dis(poi _a, poi _b)
+{
+	return sqrt((_a.x - _b.x) * (_a.x - _b.x) +
+		    (_a.y - _b.y) * (_a.y - _b.y));
+}
+
+double w[maxn];
+
+poi ans, bst;
+double ene;
+
+double rd()
+{
+	// return (double)rand() / (double)RAND_MAX;
+	return rand();
+}
+
+double temp(poi p)
+{
+	double res = 0;
+	for (ll i = 1; i <= n; i++) {
+		res += dis(p, a[i]) * w[i];
+	}
+	return res;
+}
+
+void simulate()
+{
+	double t = 1e18;
+	while (t > 1e-18) {
+		poi now = ans;
+		double tx = t * (rd() + rd() - RAND_MAX),
+		       ty = t * (rd() + rd() - RAND_MAX);
+		poi d = { tx, ty };
+		now += d;
+		double ene_now = temp(now);
+		double delta = ene_now - ene;
+		// cout << ene << " " << ene_now << endl;
+		if (delta < 0) {
+			ene = ene_now;
+			ans = now;
+			bst = ans;
+		}
+		if (exp(-delta / t) > rd() / RAND_MAX) {
+			ans = now;
+			ene = ene_now;
+		}
+		// cout << d.x << ' ' << d.y << endl;
+		t *= 0.998;
+	}
+}
+
+void solv()
+{
+	cin >> n;
+	for (ll i = 1; i <= n; i++) {
+		cin >> a[i].x >> a[i].y >> w[i];
+		ans += a[i];
+	}
+	ans = ans / (double)n;
+
+	ene = temp(ans);
+	bst = ans;
+
+	srand((unsigned)time(0));
+
+	simulate();
+
+	printf("%.3Lf %.3Lf\n", ans.x, ans.y);
+}
+
+int main()
+{
+	ll t = 1;
+	// cin >> t;
+	while (t--) {
+		solv();
+	}
+	return 0;
+}
+```
