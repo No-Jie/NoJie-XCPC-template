@@ -91,7 +91,7 @@ for(int l=a,r=a;l<=b;l=r+1)
 
 # 离散化
 
-![image-20220826225312756](C:\Users\巷子里的童年\AppData\Roaming\Typora\typora-user-images\image-20220826225312756.png)
+![image-20220826225312756](图片/离散化1.png)
 
 ![image-20220826225318201](C:\Users\巷子里的童年\AppData\Roaming\Typora\typora-user-images\image-20220826225318201.png)
 
