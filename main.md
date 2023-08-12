@@ -1401,31 +1401,24 @@ signed main() {
 }
 ```
 
-### KMP算法
+### 拓展KMP算法
 
 ```c++
-int n;
-vector<int> pi(n);
-void next(string s) {
-	int n = (int)s.length();
-	for (int i = 1; i < n; i++) {
-		int j = pi[i - 1];
-		while (j > 0 && s[i] != s[j]) j = pi[j - 1];
-		if (s[i] == s[j]) j++;
-		pi[i] = j;
+//字符串下标从1开始
+void get_z(string t){
+	z[1]=tlen;
+	for (int i=2,l,r=0;i<=tlen;i++){
+		if (i<=r)z[i]=min(z[i-l+1],r-i+1);
+		while (t[1+z[i]]==t[i+z[i]])z[i]++;
+		if (i+z[i]-1>r)l=i,r=i+z[i]-1;
 	}
 }
-int KMP(string s, string t, int pos) {
-	int i = pos, j = 1, len1 = s.length(), len2 = t.length();
-	while (i <= len1 && j <= len2) {
-		if (j == 0 || s[i] == t[j]) {
-			++i;
-			++j;
-		}
-		else  j = pi[j];
+void get_p(string s,string t){
+	for (int i=1,l,r=0;i<=slen;i++){
+		if (i<=r)p[i]=min(z[i-l+1],r-i+1);
+		while (1+p[i]<=slen&&1+p[i]<=tlen&&t[1+p[i]]==s[i+p[i]])p[i]++;
+		if (i+p[i]-1>r)l=i,r=i+p[i]-1;
 	}
-	if (j > len2)  return  i - len2;
-	else return 0;
 }
 ```
 
