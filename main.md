@@ -93,7 +93,7 @@ for(int l=a,r=a;l<=b;l=r+1)
 
 ![image-20220826225312756](图片/离散化1.png)
 
-![image-20220826225318201](C:\Users\巷子里的童年\AppData\Roaming\Typora\typora-user-images\image-20220826225318201.png)
+![image-20220826225318201](图片/离散化2.png)
 
 # STL
 
@@ -272,7 +272,7 @@ void add(int x, int k){//将[x,n]区间内每个数都加k，单点修改
 //建树：n次单点修改,o(nlogn)
 ```
 
-![image-20220826231648679](C:\Users\巷子里的童年\AppData\Roaming\Typora\typora-user-images\image-20220826231648679.png)
+![image-20220826231648679](图片/树状数组.png)
 
 # 动态规划
 
