@@ -25,7 +25,7 @@ int read() {
 		c=getchar();
 	}
 	while(c>='0'&&c<='9') {
-		sum=(sum*10+c-'0')%mod;5
+		sum=(sum*10+c-'0')%mod;
 		c=getchar();
 	}
 	return sum*p;
@@ -3733,19 +3733,6 @@ struct edge{
 	int v,w,c,fail;
 }e[maxn];
 int p[maxn],eid,n,m,s,t;
-int read(){
-	int c=getchar(),res=0,mark=1;
-	if(c=='-'){
-		mark=-1;
-		c=getchar();
-	}
-	while(c>='0' && c<='9'){
-		res*=10;
-		res+=(c-'0');
-		c=getchar();
-	}	
-	return res*mark;
-}
 void init(){
 	memset(p,-1,sizeof p);
 	eid=0;
