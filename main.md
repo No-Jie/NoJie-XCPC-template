@@ -3808,3 +3808,132 @@ int main(){
 }
 
 ```
+
+## 线段树合并
+```cpp
+ll n, q;
+
+struct et {
+	ll t, nxt;
+} e[maxn << 2];
+ll cnt = 1;
+ll hd[maxn] = {};
+
+struct st {
+	ll l, r;
+	ll lp, rp;
+	ll val, pos;
+} tr[maxn * 40];
+ll tot = 0;
+ll pool[maxn];
+ll top = 0;
+
+ll get_nd()
+{
+	if (top) {
+		return pool[top--];
+	}
+	return ++tot;
+}
+
+void put_nd(ll u)
+{
+	pool[++top] = u;
+	tr[u] = {};
+}
+
+void push_up(ll u)
+{
+	if (tr[ls(u)].val > tr[rs(u)].val) {
+		tr[u].val = tr[ls(u)].val;
+		tr[u].pos = tr[ls(u)].pos;
+	} else {
+		tr[u].val = tr[rs(u)].val;
+		tr[u].pos = tr[rs(u)].pos;
+	}
+}
+
+ll merge(ll x, ll y)
+{
+	if (x == 0) {
+		return y;
+	}
+	if (y == 0) {
+		return x;
+	}
+	ll now = get_nd();
+	if (tr[x].l == tr[x].r) {
+		tr[now].val = tr[x].val + tr[y].val;
+		tr[now].pos = tr[x].l;
+	} else {
+		tr[now].lp = merge(ls(x), ls(y));
+		tr[now].rp = merge(rs(x), rs(y));
+		push_up(now);
+	}
+	put_nd(x);
+	put_nd(y);
+	return now;
+}
+
+void update(ll &u, ll pos, ll val, ll l, ll r)
+{
+	if (u == 0) {
+		u = get_nd();
+		tr[u].l = l;
+		tr[u].r = r;
+	}
+	if (l == r) {
+		tr[u].val += val;
+		tr[u].pos = l;
+	} else {
+		ll mid = (l + r) >> 1;
+		if (pos <= mid) {
+			update(ls(u), pos, val, l, mid);
+		} else {
+			update(rs(u), pos, val, mid + 1, r);
+		}
+		push_up(u);
+	}
+	if (tr[u].val == 0) {
+		tr[u].pos = 0;
+	}
+}
+
+ll fa[maxn][25];
+ll dep[maxn];
+void dfs(ll u, ll f)
+{
+	fa[u][0] = f;
+	dep[u] = dep[f] + 1;
+	for (ll i = 1; i <= 22; i++) {
+		fa[u][i] = fa[fa[u][i - 1]][i - 1];
+	}
+	for (ll i = hd[u]; i != 0; i = e[i].nxt) {
+		ll v = e[i].t;
+		if (v == f) {
+			continue;
+		}
+		dfs(v, u);
+	}
+}
+
+ll lca(ll x, ll y)
+{
+	if (dep[x] < dep[y]) {
+		swap(x, y);
+	}
+	while (dep[x] > dep[y]) {
+		x = fa[x][(ll)log2(dep[x] - dep[y])];
+	}
+	if (x == y) {
+		return x;
+	}
+	for (ll i = 22; i >= 0; i--) {
+		if (fa[x][i] != fa[y][i]) {
+			x = fa[x][i];
+			y = fa[y][i];
+		}
+	}
+	return fa[x][0];
+}
+```
