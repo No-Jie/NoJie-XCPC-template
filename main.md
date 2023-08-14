@@ -3523,3 +3523,192 @@ int main()
 	return 0;
 }
 ```
+
+## 最大流dinic
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn=8111111;
+const int inf=0x7f7f7f7f;
+struct edge{
+	int v,w,fail;
+}e[maxn];
+int p[maxn],eid;
+int n,m,s,t;
+void init(){
+	memset(p,-1,sizeof p);
+	eid=0;
+}
+void insert(int u,int v,int w){
+	e[eid].v=v;
+	e[eid].w=w;
+	e[eid].fail=p[u];
+	p[u]=eid++;
+}
+void addedge(int u,int v,int w){
+	insert(u,v,w);
+	insert(v,u,0); 
+}
+int d[maxn];
+bool bfs(){
+	memset(d,-1,sizeof d);
+	queue<int> q;
+	q.push(s);
+	d[s]=0;
+	while(!q.empty()){
+		int u=q.front();
+		q.pop();
+		for(int i=p[u];~i;i=e[i].fail){
+			int v=e[i].v;
+			if(d[v]==-1 && e[i].w>0){
+				d[v]=d[u]+1;
+				q.push(v);
+			}
+		}
+	}
+	return d[t]!=-1;
+} 
+int dfs(int u,int flow){
+	if(u==t){
+		return flow;
+	}
+	int res=0;
+	for(int i=p[u];~i;i=e[i].fail){
+		int v=e[i].v;
+		if(d[v]==d[u]+1 && e[i].w>0){
+			int tmp=dfs(v,min(flow,e[i].w));
+			flow-=tmp;
+			e[i].w-=tmp;
+			e[i^1].w+=tmp;
+			res+=tmp;
+			if(flow==0){
+				break;
+			}
+		}
+	}
+	if(res==0){
+		d[u]=-1;
+	}
+	return res;
+}
+int dinic(){
+	int res=0;
+	while(bfs()){
+		res+=dfs(s,inf);
+	}
+	return res;
+}
+int main(){
+	init();
+	cin>>n>>m>>s>>t;
+	for(int i=0;i<m;i++){
+		int u,v,w;
+		cin>>u>>v>>w;
+		addedge(u,v,w);
+	}
+	cout<<dinic()<<endl;
+	return 0;
+}
+
+```
+
+## 最小费用最大流
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn=111111;
+const int inf=0x7f;
+struct edge{
+	int v,w,c,fail;
+}e[maxn];
+int p[maxn],eid,n,m,s,t;
+int read(){
+	int c=getchar(),res=0,mark=1;
+	if(c=='-'){
+		mark=-1;
+		c=getchar();
+	}
+	while(c>='0' && c<='9'){
+		res*=10;
+		res+=(c-'0');
+		c=getchar();
+	}	
+	return res*mark;
+}
+void init(){
+	memset(p,-1,sizeof p);
+	eid=0;
+}
+void insert(int u,int v,int w,int c){
+	e[eid].v=v;
+	e[eid].w=w;
+	e[eid].c=c;
+	e[eid].fail=p[u];
+	p[u]=eid++;
+}
+void addedge(int u,int v,int w,int c){
+	insert(u,v,w,c);
+	insert(v,u,0,-c);
+}
+int d[maxn];
+bool inq[maxn];
+int pre[maxn];
+bool spfa(){
+	memset(pre,-1,sizeof pre);
+	memset(inq,0,sizeof inq);
+	memset(d,inf,sizeof d);
+	queue<int> q;
+	q.push(s);
+	inq[s]=true;
+	d[s]=0;
+	while(!q.empty()){
+		int u=q.front();
+		q.pop();
+		inq[u]=false;
+		for(int i=p[u];~i;i=e[i].fail){
+			int v=e[i].v;
+			if(e[i].w && d[v]>d[u]+e[i].c){
+				d[v]=d[u]+e[i].c;
+				pre[v]=i;
+				if(!inq[v]){
+					inq[v]=true;
+					q.push(v);
+				}
+			}
+		}
+	}
+	return pre[t]!=-1;
+}
+int costflow(){
+	int res=0;
+	int ret=0;
+	while(spfa()){
+		int flow=inf;
+		for(int i=t;i!=s;i=e[pre[i]^1].v){
+			flow=min(flow,e[pre[i]].w);
+		}
+		for(int i=t;i!=s;i=e[pre[i]^1].v){
+			e[pre[i]].w-=flow;
+			e[pre[i]^1].w+=flow;
+			res+=flow*e[pre[i]].c;
+		}
+		ret+=flow;
+	}
+	cout<<ret<<" ";
+	return res;
+}
+int main(){
+	init();
+	cin>>n>>m>>s>>t;
+	for(int i=0;i<m;i++){
+		int u,v,w,c;
+		cin>>u>>v>>w>>c;
+		addedge(u,v,w,c);
+	}
+	cout<<costflow()<<endl;
+	return 0;
+}
+
+```
