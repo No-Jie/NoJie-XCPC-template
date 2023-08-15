@@ -2384,7 +2384,188 @@ int main()
 ```
 
 ## 2-SAT
+```cpp
+#include <iostream>
+#include <queue>
+#include <stack>
+using namespace std;
 
+using ll = long long;
+
+const ll maxn = 1005000;
+const ll maxm = 5005000;
+
+struct E
+{
+    ll f, t, nxt;
+} e[maxm] = {};
+ll cnt = 0;
+ll h[maxn] = {};
+ll deg[maxn] = {};
+ll dis[maxn] = {};
+
+void adde(ll f, ll t)
+{
+    e[++cnt] = {f, t, h[f]};
+    h[f] = cnt;
+}
+
+ll tick = 0, tot = 0;
+ll dfn[maxn] = {}, low[maxn] = {}, vis[maxn] = {}, visit[maxn] = {};
+ll tar_dis[maxn] = {};
+stack<ll> s;
+
+vector<ll> g[maxn];
+vector<ll> rg[maxn];
+
+void tarjan(ll x)
+{
+    dfn[x] = low[x] = ++tick;
+    visit[x] = 1;
+
+    s.push(x);
+
+    for (ll i = h[x]; i != 0; i = e[i].nxt)
+    {
+        ll u = x;
+        ll v = e[i].t;
+        if (!dfn[v])
+        {
+            tarjan(v);
+            low[u] = min(low[u], low[v]);
+        }
+        else if (visit[v])
+        {
+            low[u] = min(low[u], dfn[v]);
+        }
+    }
+
+    if (low[x] == dfn[x])
+    {
+        tot++;
+        while (1)
+        {
+            ll now = s.top();
+            s.pop();
+            vis[now] = tot;
+            tar_dis[tot] += dis[now];
+            visit[now] = 0;
+            if (x == now)
+            {
+                break;
+            }
+        }
+    }
+}
+
+vector<ll> topo_point;
+
+void topo()
+{
+    queue<ll> q;
+    for (ll i = 1; i <= tot; i++)
+    {
+        if (deg[i] == 0)
+        {
+            q.push(i);
+        }
+    }
+
+    while (!q.empty())
+    {
+        ll u = q.front();
+        q.pop();
+        topo_point.push_back(u);
+
+        for (ll i = 0; i < (ll)g[u].size(); i++)
+        {
+            ll v = g[u][i];
+            deg[v]--;
+            if (deg[v] == 0)
+            {
+                q.push(v);
+            }
+        }
+    }
+}
+
+int main()
+{
+    ll n, m;
+    cin >> n >> m;
+//    for (ll i = 1; i <= n; i++)
+//    {
+//        cin >> dis[i];
+//    }
+    for (ll i = 1; i <= m; i++)
+    {
+//        ll u, v;
+//        cin >> u >> v;
+//        adde(u, v);
+		ll x,a,y,b;
+		cin>>x>>a>>y>>b; 
+		if (a&&b)
+		{
+			adde((x<<1)|1,(y<<1));
+			adde((y<<1)|1,(x<<1));
+		}
+		else if (a&&!b)
+		{
+			adde((y<<1),(x<<1));
+			adde((x<<1)|1,(y<<1)|1);
+		}
+		else if (!a&&b)
+		{
+			adde((x<<1),(y<<1));
+			adde((y<<1)|1,(x<<1)|1);
+		}
+		else if (!a&&!b)
+		{
+			adde((x<<1),(y<<1)|1);
+			adde((y<<1),(x<<1)|1);
+		}
+    }
+
+    for (ll i = 1; i <= n<<1; i++)
+    {
+        if (!vis[i])
+        {
+            tarjan(i);
+        }
+    }
+
+    for (ll i = 1; i <= cnt; i++)
+    {
+        ll u = e[i].f, v = e[i].t;
+        if (vis[u] != vis[v])
+        {
+
+            ll x = vis[u], y = vis[v];
+            deg[y]++;
+            g[x].push_back(y);
+            rg[y].push_back(x);
+        }
+    }
+    
+    for (ll i=1;i<=n;i++)
+	{
+		if (vis[i<<1]==vis[i<<1|1])
+		{
+			cout<<"IMPOSSIBLE"<<endl;
+			return 0;
+		}
+	}
+	cout<<"POSSIBLE"<<endl;
+	for (ll i=1;i<=n;i++)
+	{
+		cout<<(vis[i<<1]<vis[i<<1|1])<<' ';
+	}
+	cout<<endl;
+    return 0;
+}
+```
+
+## 差分约束
 ```cpp
 #include <cmath>
 #include <cstddef>
