@@ -31,6 +31,26 @@ int read() {
 	return sum*p;
 }
 ```
+### __int128快读
+```c++
+__int128 read()
+{
+	//直接在函数里面实现读字符串操作更简洁
+	__int128 res=0;//初始结果赋值0
+	char scan[1005];
+	scanf("%s",scan);
+	for(int i=0;i<strlen(scan);i++)
+		res*=10,res+=scan[i]-'0';//实现进位
+	return res;//返回__int128类型
+}
+
+void print(__int128 num)
+{//递归调用，实现从高位向低位输出
+	if(num>9) 
+		print(num/10);
+	putchar(num%10+'0');
+}
+```
 
 # 二分
 
