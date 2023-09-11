@@ -1483,6 +1483,151 @@ int exgcd(int a, int b, int& x, int& y) {
 }
 ```
 
+```cpp
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
+
+using namespace std;
+
+using ll = long long;
+using ull = unsigned long long;
+
+#define _DEBUG
+
+#if defined(DEBUG)
+void DBG_p()
+{
+}
+template <typename T, typename... Args> void DBG_p(T head, Args... args)
+{
+    cout << " " << head;
+    DBG_p(args...);
+}
+template <typename... Args> void DBG(Args... args)
+{
+    cout << "Line:" << __LINE__;
+    DBG_p(args...);
+    cout << endl;
+}
+#else
+#define DBG(f, ...) void()
+#endif
+
+ll gcd(ll a, ll b)
+{
+    while (b != 0)
+    {
+        ll t = a % b;
+        a = b;
+        b = t;
+    }
+    return a;
+}
+
+ll lcm(ll a,ll b)
+{
+    return a*b/gcd(a,b);
+}
+
+void exgcd(ll a, ll b, ll &x, ll &y)
+{
+    if (b == 0)
+    {
+        x = 1;
+        y = 0;
+        return;
+    }
+    exgcd(b, a % b, x, y);
+    ll t=y;
+    y = x - a / b * y;
+    x=t;
+}
+
+void solv()
+{
+    ll a, b, c, x, y;
+    scanf("%lld%lld%lld", &a, &b, &c);
+
+    ll gcd_num = gcd(a, b);
+
+    if (c % gcd_num != 0)
+    {
+        // todo nint
+        printf("-1\n");
+
+        return;
+    }
+
+    a /= gcd_num;
+    b /= gcd_num;
+    c /= gcd_num;
+    exgcd(a, b, x, y);
+    x *= c;
+    y *= c;
+
+    ll x_min,y_min,x_max,y_max;
+    ll x_inc=a,y_inc=b;
+
+    if (x<=0)
+    {
+        x+=(-x/b+1)*b;
+    }
+    x_min=x;
+    if (x_min%b!=0)
+    {
+        x_min=x%b;
+    }
+    else {
+        x_min=x%b+b;
+    }
+    y_max=(c-a*x_min)/b;
+    x_min=(c-b*y_max)/a;
+    if (y<=0)
+    {
+        y+=(-y/a+1)*a;
+    }
+    y_min=y;
+    if (y_min%a!=0)
+    {
+        y_min=y%a;
+    }
+    else {
+        y_min=y_min%a+a;
+    }
+    x_max=(c-b*y_min)/a;
+    y_min=(c-a*x_max)/b;
+
+    if (x_max>0)
+    {
+        printf("%lld %lld %lld %lld %lld\n",(x_max-x_min)/b+1,x_min,y_min,x_max,y_max);
+    }
+    else {
+        printf("%lld %lld\n",x_min,y_min);
+    }
+
+
+    return;
+}
+
+int main()
+{
+    int t = 1;
+    // cin >> t;
+    scanf("%lld",&t);
+    while (t--)
+    {
+        solv();
+    }
+}
+```
+
 ### 欧拉函数
 
 欧拉函数即 $\varphi(n) $，表示的是小于等于 $n $和 $n $互质的数的个数。
