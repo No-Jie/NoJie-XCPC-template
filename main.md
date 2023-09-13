@@ -1675,7 +1675,7 @@ int euler_phi(int n) {
 当m%p == 0 的时候，phi(n) = phi(m)*p
 
 当m%p != 0的时候，phi(n) = phi(m)*(p-1)
-
+求1~n中欧拉函数的改进版
 ```c++
 long long dp[n]= {0ll};
 void Solve(void)
