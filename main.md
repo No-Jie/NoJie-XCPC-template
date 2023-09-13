@@ -1670,6 +1670,37 @@ int euler_phi(int n) {
 }
 ```
 
+对于任意一个能被n整除的质数，有m = n/p
+
+当m%p == 0 的时候，phi(n) = phi(m)*p
+
+当m%p != 0的时候，phi(n) = phi(m)*(p-1)
+
+```c++
+long long dp[n]= {0ll};
+void Solve(void)
+{
+    get_prime();
+    for(int i=2; i<n; ++i)
+    {
+        if(is_prime[i])
+            dp[i]=i-1;
+        else
+        {
+            for(int j=0; j<num_prime; ++j) 
+                if(i%prime[j]==0)
+                {
+                    if((i/prime[j])%prime[j]==0)
+                        dp[i]=dp[i/prime[j]]*prime[j];
+                    else
+                        dp[i]=dp[i/prime[j]]*(prime[j]-1);
+                    break;
+                }
+        }
+    }
+}
+```
+
 ### 同余方程
 
 求关于 $x $的同余方程 $a x \equiv 1 \pmod {b} $的最小正整数解。
