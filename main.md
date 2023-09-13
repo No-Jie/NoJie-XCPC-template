@@ -4375,3 +4375,31 @@ int main() {
   return 0;
 }
 ```
+
+## 递推通项+光速幂
+
+![image](https://github.com/No-Jie/NoJie-XCPC-template/assets/54484233/ec0fdc41-6cee-45ee-bd5d-d59db5696387)
+![image](https://github.com/No-Jie/NoJie-XCPC-template/assets/54484233/2b2321b0-6648-4bb8-a9a3-9b4fe5424009)
+
+光速幂O(1)查询示例：
+```cpp
+void init()
+{
+	pksm[0][0] = 1;
+	pksm[1][0] = 1;
+	pksm[2][0] = 1;
+	pksm[3][0] = 1;
+	for (ll i = 1; i <= 65536 + 50; i++) {
+		pksm[0][i] = pksm[0][i - 1] * 94153035 % mod;
+		pksm[1][i] = pksm[1][i - 1] * 905847205 % mod;
+	}
+	for (ll i = 1; i <= 65536 + 50; i++) {
+		pksm[2][i] = pksm[2][i - 1] * pksm[0][65536] % mod;
+		pksm[3][i] = pksm[3][i - 1] * pksm[1][65536] % mod;
+	}
+}
+ull fpow(ull num, ull p)
+{
+	return pksm[num][p % 65536] * pksm[num + 2][p / 65536] % mod;
+}
+```
