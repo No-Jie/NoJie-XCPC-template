@@ -1448,6 +1448,31 @@ void get_p(string s,string t){
 
  $\sum_{i=0}^n\binom{n-i}{i}=F_{n+1}\tag{12} $（其中 F 是斐波那契数列）
 
+### 求[1,n]的区间中与x互质的数的个数
+```c++
+vector<long long> pme;
+long long count_prime(long long n,long long x){
+    pme.clear();
+    for(long long i=2;i<=sqrt(x);++i){
+        if(x%i==0){
+            pme.push_back(i);
+            while(x%i==0) x/=i;
+        }
+    }
+    if(x>1) pme.push_back(x);
+    long long sum=0;
+    for(int i=1;i<(1<<pme.size());++i){
+        long long z=1,num=0;
+        for(int j=0;j<pme.size();++j)
+            if(i>>j&1) z*=pme[j],++num;
+        if(num&1) sum+=n/z;
+        else sum-=n/z;
+    }
+    return n-sum;
+}
+```
+
+
 ### 埃式筛
 
 时间复杂度是 $O(n\log\log n) $
