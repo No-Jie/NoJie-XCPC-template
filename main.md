@@ -60,11 +60,22 @@ void print(__int128 num)
 int l = 1, r = n, mid;
 while (l <= r){
     mid = (l + r) / 2;
-    if (check(mid)) l = mid + 1;
+    if (check(mid)) l = mid;
     else r = mid - 1;
 }
-int ans = l - 1;
+int ans = l;
 ```
+
+```c++
+int l = 1, r = n, mid;
+while (l <= r){
+    mid = (l + r + 1) / 2;
+    if (check(mid)) l = mid + 1;
+    else r = mid;
+}
+int ans = l;
+```
+
 
 ### 小数
 
