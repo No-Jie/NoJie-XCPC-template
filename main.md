@@ -4470,3 +4470,316 @@ ull fpow(ull num, ull p)
 	return pksm[num][p % 65536] * pksm[num + 2][p / 65536] % mod;
 }
 ```
+
+## phollard_rho 2
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+ll c;
+
+set<ll> fact;
+
+ll mum(ll a,ll b,ll n)
+{
+	a%=n;
+	b%=n;
+	ll ret=0;
+	ll tmp=a; 
+	while (b)
+	{
+		if (b&1)
+		{
+			ret+=tmp;
+			if (ret>n)ret-=n;
+		}
+		tmp<<=1;
+		if (tmp>n) tmp-=n;
+		b>>=1;
+	}
+	return ret;
+}
+
+ll fp(ll x,ll y,ll m)
+{
+	ll res=1;
+	ll tmp=x%m;
+	while(y)
+	{
+		if (y&1) res=mum(res,tmp,m);
+		tmp=mum(tmp,tmp,m);
+		y>>=1;
+	}
+	return res;
+}
+
+ll p_r(ll n)
+{
+//	cout<<"PR "<<n<<endl;
+	ll i=1,k=2;
+	ll c=rand()%(n-1)+1;
+	ll x=rand()%n;
+	ll y=x;
+	while (1)
+	{
+		i++;
+		x=(mum(x,x,n)+c)%n;
+		ll d=__gcd(y>x?y-x:x-y,n);
+//		cout<<"PP "<<x<<' '<<d<<' '<<y<<endl;
+		if (d!=1&&d!=n)
+		{
+			return d;
+		}
+		if (y==x) return n;
+		if (i==k)
+		{
+			y=x;
+			k=k<<1;
+		}
+	}
+}
+
+bool witness(ll a,ll n)
+{
+//	cout<<"WI "<<a<<"  "<<n<<endl;
+	ll u=n-1;
+	ll t=0;
+	while (u&1==0) {
+		u=u>>1;
+		t++;
+	}
+	ll x1,x2;
+	x1=fp(a,u,n);
+	for (ll i=1;i<=t;i++)
+	{
+		x2=fp(x1,2,n);
+		if (x2==1&&x1!=1&&x1!=n-1)
+		{
+			return 1;
+		}
+		x1=x2;
+	}
+	if (x1!=1)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+ll m_r(ll n,ll s)
+{
+//	cout<<"MR "<<n<<endl;
+	if (n<2)
+	{
+		return 0;
+	}
+	if (n==2)
+	{
+		return 1;
+	}
+	if (n%2==0)
+	{
+		return 0;
+	}
+	for (ll i=0;i<s&&i<n;i++)
+	{
+		ll a=rand()%(n-1)+1;
+		if (witness(a,n)) return 0;
+	}
+	return 1;
+}
+
+void ff(ll n)
+{
+//	cout<<"FF "<<n<<endl;
+	if (m_r(n,5))
+	{
+		fact.insert(n);
+		return;
+	}
+	ll p=n;
+	while (p>=n) {
+//		cout<<"TL "<<p<<endl;
+		p=p_r(p);
+//		cout<<"TN "<<p<<endl;
+	}
+	ff(p);
+	ff(n/p);
+}
+		
+void solv()
+{
+	cin>>c;
+	if (c==1)
+	{
+		cout<<"no"<<'\n';
+		return;
+	}
+	fact.clear();
+	ff(c);
+	ll mulr=1;
+	for (auto i:fact)
+	{
+//		cout<<i<<' ';
+		mulr*=i;
+	}
+//	cout<<endl;
+	cout<<(mulr<c?"yes":"no")<<'\n';
+}
+
+int main()
+{
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+	cout.setf(ios::fixed);
+	ll __t=1;
+	cin>>__t;
+	while (__t--)
+	{
+		solv();
+	}
+	return 0;
+}
+```
+
+## phollard_rho 3
+
+```
+#include<bits/stdc++.h>
+#define mem(a,x) memset(a,x,sizeof(a))
+using namespace std;
+typedef long long LL;
+const int maxn=50005;
+const int mod=26;
+const int INF=0x3f3f3f3f;
+const int Times = 10;
+const int N = 5500;
+LL ct, cnt;
+LL fac[N], num[N];
+LL gcd(LL a, LL b)  //求两数最大公因子
+{
+    return b? gcd(b, a % b) : a;
+}
+LL multi(LL a, LL b, LL m)  //快速乘
+{
+    LL ans = 0;
+    a %= m;
+    while(b)
+    {
+        if(b & 1)
+        {
+            ans = (ans + a) % m;
+            b--;
+        }
+        b >>= 1;
+        a = (a + a) % m;
+    }
+    return ans;
+}
+LL pow(LL a, LL b, LL m)  //快速幂
+{
+    LL ans = 1;
+    a %= m;
+    while(b)
+    {
+        if(b & 1)
+        {
+            ans = multi(ans, a, m);
+            b--;
+        }
+        b >>= 1;
+        a = multi(a, a, m);
+    }
+    return ans;
+}
+bool Miller_Rabin(LL n)  //判断n是不是素数
+{
+    if(n == 2) return true;
+    if(n < 2 || !(n & 1)) return false;
+    LL m = n - 1;
+    int k = 0;
+    while((m & 1) == 0)
+    {
+        k++;
+        m >>= 1;
+    }
+    for(int i=0; i<Times; i++)
+    {
+        LL a = rand() % (n - 1) + 1;
+        LL x = pow(a, m, n);
+        LL y = 0;
+        for(int j=0; j<k; j++)
+        {
+            y = multi(x, x, n);
+            if(y == 1 && x != 1 && x != n - 1) return false;
+            x = y;
+        }
+        if(y != 1) return false;
+    }
+    return true;
+}
+LL pollard_rho(LL n, LL c)  //大整数分解
+{
+    LL i = 1, k = 2;
+    LL x = rand() % (n - 1) + 1;
+    LL y = x;
+    while(true)
+    {
+        i++;
+        x = (multi(x, x, n) + c) % n;
+        LL d = gcd((y - x + n) % n, n);
+        if(1 < d && d < n) return d;
+        if(y == x) return n;
+        if(i == k)
+        {
+            y = x;
+            k <<= 1;
+        }
+    }
+}
+void find(LL n, int c)  //递归查找大整数n的质因子
+{
+    if(n == 1) return;
+    if(Miller_Rabin(n))
+    {
+        fac[ct++] = n;
+        return ;
+    }
+    LL p = n;
+    LL k = c;
+    while(p >= n) p = pollard_rho(p, c--);
+    find(p, k);
+    find(n / p, k);
+}
+int main()
+{
+    LL n;
+    while(cin>>n)
+    {
+        ct = 0;
+        find(n, 120);
+        sort(fac, fac + ct);
+        num[0] = 1;
+        int k = 1;
+        for(int i=1; i<ct; i++)
+        {
+            if(fac[i] == fac[i-1])
+                ++num[k-1];
+            else
+            {
+                num[k] = 1;
+                fac[k++] = fac[i];
+            }
+        }
+        cnt = k;
+        for(int i=0; i<cnt; i++)
+            cout<<fac[i]<<"^"<<num[i]<<" ";
+        cout<<endl;
+    }
+    return 0;
+}
+```
