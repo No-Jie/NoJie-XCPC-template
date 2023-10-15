@@ -1452,7 +1452,97 @@ void get_p(string s,string t){
 	}
 }
 ```
+### KMP算法
 
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef unsigned long long ull;
+
+vector<ll> nxt;
+
+void get_next(const string &p)
+{
+    nxt.resize(p.length() + 1, 0);
+    nxt[0] = -1;
+
+    ll j = 1, k = -1;
+
+    while (j < p.length())
+    {
+        while (k != -1 && p[j] != p[k + 1])
+        {
+            k = nxt[k];
+        }
+        if (p[j] == p[k + 1])
+        {
+            k++;
+        }
+        nxt[j] = k;
+        j++;
+    }
+}
+
+vector<ll> kmp(const string &s, const string &p)
+{
+    ll ps = 0, pp = -1;
+    vector<ll> res;
+    get_next(p);
+    while (ps < s.length())
+    {
+        while (pp != -1 && s[ps] != p[pp + 1])
+        {
+            pp = nxt[pp];
+        }
+        if (s[ps] == p[pp + 1])
+        {
+            pp++;
+        }
+        if (pp == p.length() - 1)
+        {
+            res.push_back(ps - pp);
+            pp = nxt[pp];
+        }
+        ps++;
+    }
+    return res;
+}
+
+void solv()
+{
+    string s, p;
+    cin >> s >> p;
+    vector<ll> res = kmp(s, p);
+
+    for (auto i : res)
+    {
+        cout << i + 1 << endl;
+    }
+
+    cout << 0;
+    for (ll i = 1; i < p.length(); i++)
+    {
+        cout << ' ' << nxt[i] + 1;
+    }
+    cout << endl;
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+    ios::sync_with_stdio(false);
+    int t = 1;
+    while (t--)
+    {
+        solv();
+    }
+    cout.flush();
+    return 0;
+}
+```
 # 数学
 
 > 组合数可以通过杨辉三角来递推计算
